@@ -209,9 +209,11 @@ export default function App() {
       prev && prev.id === movieId ? { ...prev, watched: newWatched } : prev
     );
 
+    // Show toast immediately on click
+    addToast(`${target.title} marked as ${newWatched ? 'watched' : 'unwatched'}`);
+
     try {
       await movieApi.update(movieId, { watched: newWatched });
-      addToast(`${target.title} marked as ${newWatched ? 'watched' : 'unwatched'}`);
     } catch (err) {
       // Revert on error
       setMovies((prev) =>
@@ -220,7 +222,10 @@ export default function App() {
       setPlan((prev) =>
         prev.map((p) => (p.id === movieId ? { ...p, watched: target.watched } : p))
       );
-      addToast(err.message, false);
+      setActiveMovieInfo((prev) =>
+        prev && prev.id === movieId ? { ...prev, watched: target.watched } : prev
+      );
+      addToast(`Failed to update ${target.title}: ${err.message}`, false);
     }
   };
 
@@ -237,9 +242,11 @@ export default function App() {
       prev.map((m) => (m.id === movieId ? { ...m, watched: newWatched } : m))
     );
 
+    // Show toast immediately on click
+    addToast(`${planItem.title} marked as ${newWatched ? 'watched' : 'unwatched'}`);
+
     try {
       await movieApi.update(movieId, { watched: newWatched });
-      addToast(`${planItem.title} marked as ${newWatched ? 'watched' : 'unwatched'}`);
     } catch (err) {
       // Revert on error
       setPlan((prev) =>
@@ -248,7 +255,7 @@ export default function App() {
       setMovies((prev) =>
         prev.map((m) => (m.id === movieId ? { ...m, watched: planItem.watched } : m))
       );
-      addToast(err.message, false);
+      addToast(`Failed to update ${planItem.title}: ${err.message}`, false);
     }
   };
 
@@ -256,13 +263,18 @@ export default function App() {
   const handleRemoveMovie = async (movieId) => {
     const m = movies.find((x) => x.id === movieId);
     if (!m) return;
+
+    // Optimistic remove and immediate toast
+    setMovies((prev) => prev.filter((x) => x.id !== movieId));
+    setPlan((prev) => prev.filter((x) => x.id !== movieId));
+    addToast(`Removed ${m.title}`);
+
     try {
       await movieApi.delete(movieId);
-      setMovies((prev) => prev.filter((x) => x.id !== movieId));
-      setPlan((prev) => prev.filter((x) => x.id !== movieId));
-      addToast(`Removed ${m.title}`);
     } catch (err) {
-      addToast(err.message, false);
+      // Revert on error
+      setMovies((prev) => [...prev, m]);
+      addToast(`Failed to remove ${m.title}: ${err.message}`, false);
     }
   };
 
