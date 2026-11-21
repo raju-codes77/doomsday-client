@@ -80,7 +80,10 @@ Backend: `http://localhost:5000`
 
 **Yajuddin Raju** — Full Stack Developer
 
-[GitHub](https://github.com/raju-codes77) · [LinkedIn](https://www.linkedin.com/in/yajuddin) · [Portfolio](https://myportfolio-raju.vercel.app/)
+ [LinkedIn]
+https://www.linkedin.com/in/yajuddin
+ [Portfolio]
+https://myportfolio-raju.vercel.app/
 
 ---
 
